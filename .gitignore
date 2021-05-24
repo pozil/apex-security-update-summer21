@@ -1,0 +1,13 @@
+# Mac files
+**/.DS_Store
+**/__MACOSX
+
+# Project files
+.settings
+.project
+
+# Java files
+target
+.classpath
+/*.jar
+
