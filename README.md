@@ -12,7 +12,7 @@ A Java JDK or JRE version 11.
 
 ## Instructions
 
-1. Download the `apex-scan-x.y.z.jar` file from the releases.
+1. Download the `apex-scan-x.y.z.jar` file from the [releases](https://github.com/pozil/apex-security-update-summer21/releases/latest).
 
 1. Run the JAR file with the following command where `PATH` is the path of a parent directory that contains apex `*.cls` files. The parent directory will be scanned recursively for these files.
 
