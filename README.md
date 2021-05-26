@@ -16,16 +16,16 @@ A Java JDK or JRE version 11 or higher.
 
 1. Run the JAR file with the following command where `PATH` is the path of a parent directory that contains apex `*.cls` files. The parent directory will be scanned recursively for these files.
 
-    ```
-    $> java -jar apex-scan-1.0.0.jar PATH
+    ```shell
+    $> java -jar apex-scan-1.1.0.jar PATH
     ```
 
 	Look at the output of the script. It lists methods affected by the security update.
 
     For reference, this is the output for the `sample-apex` folder contained in this repository:
 
-    ```
-    $> java -jar apex-scan-1.0.0.jar sample-apex
+    ```shell
+    $> java -jar apex-scan-1.1.0.jar sample-apex
     EnforcePrivateGetter.counter
     EnforcePrivateGetter.PagedResult.pageSize
     
