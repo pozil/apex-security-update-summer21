@@ -33,31 +33,45 @@ public class App {
 
 	private ParserEngine engine;
 	private List<String> path;
+	private int apexFileCounter;
+	private int matchCount;
 
 	public App() {
 		this.engine = ParserEngine.get(ParserEngine.Type.NAMED);
 		this.path = new ArrayList<>();
+		this.apexFileCounter = 0;
+		this.matchCount = 0;
 	}
 
+	private void scan(File rootDir) throws IOException {
+		this.scanDirectory(rootDir);
+		System.out.printf("%nScanned %d Apex files and found %d potential matches.%n", this.apexFileCounter, this.matchCount);
+	}
+	
 	public void scanDirectory(File dir) throws IOException {
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
 				scanDirectory(file);
 			} else if (file.isFile() && file.getName().toLowerCase().endsWith(APEX_FILE_EXTENSION)) {
+				this.apexFileCounter ++;
 				parseApexFile(file.toPath());
 			}
 		}
 	}
 	
 	private void parseApexFile(Path filePath) throws IOException {
-		String sourceCode = Files.readString(filePath);
-		SourceFile sourceFile = SourceFile.builder().setBody(sourceCode).build();
-		ParserOutput output = engine.parse(sourceFile, ParserEngine.HiddenTokenBehavior.IGNORE);
+		try {
+			String sourceCode = Files.readString(filePath);
+			SourceFile sourceFile = SourceFile.builder().setBody(sourceCode).build();
+			ParserOutput output = engine.parse(sourceFile, ParserEngine.HiddenTokenBehavior.IGNORE);
 
-		CompilationUnit unit = output.getUnit();
-		if (unit instanceof ClassDeclUnit) {
-			parseClassDeclaration(((ClassDeclUnit) unit).body);
+			CompilationUnit unit = output.getUnit();
+			if (unit instanceof ClassDeclUnit) {
+				parseClassDeclaration(((ClassDeclUnit) unit).body);
+			}
+		} catch (Exception e) {
+			throw new IOException("Failed to parse \""+ filePath +"\": "+ e.getMessage(), e);
 		}
 	}
 
@@ -83,6 +97,7 @@ public class App {
 	private void parsePropertyDeclaration(PropertyDecl property) {
 		if (hasAuraEnabledModifier(property.modifiers)
 				&& (hasPrivateGetter(property.getter) || hasPrivateSetter(property.setter))) {
+			this.matchCount ++;
 			String name = property.name.getValue();
 			this.path.add(name);
 			System.out.println(String.join(".", this.path));
@@ -117,7 +132,7 @@ public class App {
 			return false;
 		}
 	}
-
+	
 	public static void main(String[] args) throws IOException {
 		// Disable jorje logs
 		LogManager.getLogManager().reset();
@@ -147,12 +162,19 @@ public class App {
 				throw new Exception("path does not denote a directory");
 			}
 		} catch (Exception e) {
-			System.err.println("Could not read directory \""+ args[0] +"\": "+ e.getMessage());
+			System.err.printf("ERROR: Could not read directory \"%s\": %s%n", args[0], e.getMessage());
 			System.exit(-2);
 			return;
 		}
 		// Run scan
-		App app = new App();
-		app.scanDirectory(rootDir);	
+		try {
+			App app = new App();
+			app.scan(rootDir);
+		} catch (Exception e) {
+			System.err.printf("ERROR: %s%n", e.getMessage());
+			System.exit(-3);
+			return;
+		}
+		
 	}
 }

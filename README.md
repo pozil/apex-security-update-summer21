@@ -8,7 +8,7 @@ This repository holds a script that will help you locate affected Apex methods.
 
 ## Requirements
 
-A Java JDK or JRE version 11.
+A Java JDK or JRE version 11 or higher.
 
 ## Instructions
 
@@ -28,6 +28,8 @@ A Java JDK or JRE version 11.
     $> java -jar apex-scan-1.0.0.jar sample-apex
     EnforcePrivateGetter.counter
     EnforcePrivateGetter.PagedResult.pageSize
+    
+    Scanned 1 Apex files and found 2 potential matches.
     ```
 
 ## License
