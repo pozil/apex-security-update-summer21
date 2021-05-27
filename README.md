@@ -37,5 +37,5 @@ A Java JDK or JRE version 11 or higher.
 
 ## License
 
-This program uses the Apex Language Server writen by Salesforce.com and licensed under the BSD 3-Clause license.
+This program uses the [Apex Language Server](https://developer.salesforce.com/tools/vscode/en/apex/language-server) writen by Salesforce.com and licensed under the BSD 3-Clause license.
 For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
