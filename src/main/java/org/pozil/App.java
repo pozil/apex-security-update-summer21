@@ -12,6 +12,7 @@ import apex.jorje.data.ast.PropertySetter;
 import apex.jorje.data.ast.Modifier;
 import apex.jorje.data.ast.Modifier.Annotation;
 import apex.jorje.data.ast.Modifier.PrivateModifier;
+import apex.jorje.data.ast.Modifier.ProtectedModifier;
 import apex.jorje.semantic.compiler.SourceFile;
 import apex.jorje.semantic.compiler.parser.ParserEngine;
 import apex.jorje.semantic.compiler.parser.ParserOutput;
@@ -45,21 +46,22 @@ public class App {
 
 	private void scan(File rootDir) throws IOException {
 		this.scanDirectory(rootDir);
-		System.out.printf("%nScanned %d Apex files and found %d potential matches.%n", this.apexFileCounter, this.matchCount);
+		System.out.printf("%nScanned %d Apex files and found %d potential matches.%n", this.apexFileCounter,
+				this.matchCount);
 	}
-	
+
 	public void scanDirectory(File dir) throws IOException {
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
 				scanDirectory(file);
 			} else if (file.isFile() && file.getName().toLowerCase().endsWith(APEX_FILE_EXTENSION)) {
-				this.apexFileCounter ++;
+				this.apexFileCounter++;
 				parseApexFile(file.toPath());
 			}
 		}
 	}
-	
+
 	private void parseApexFile(Path filePath) throws IOException {
 		try {
 			String sourceCode = Files.readString(filePath);
@@ -71,7 +73,7 @@ public class App {
 				parseClassDeclaration(((ClassDeclUnit) unit).body);
 			}
 		} catch (Exception e) {
-			throw new IOException("Failed to parse \""+ filePath +"\": "+ e.getMessage(), e);
+			throw new IOException("Failed to parse \"" + filePath + "\": " + e.getMessage(), e);
 		}
 	}
 
@@ -96,8 +98,8 @@ public class App {
 
 	private void parsePropertyDeclaration(PropertyDecl property) {
 		if (hasAuraEnabledModifier(property.modifiers)
-				&& (hasPrivateGetter(property.getter) || hasPrivateSetter(property.setter))) {
-			this.matchCount ++;
+				&& (hasPrivateOrProtectedGetter(property.getter) || hasPrivateOrProtectedSetter(property.setter))) {
+			this.matchCount++;
 			String name = property.name.getValue();
 			this.path.add(name);
 			System.out.println(String.join(".", this.path));
@@ -115,34 +117,36 @@ public class App {
 		return foundModifier != null;
 	}
 
-	private boolean hasPrivateSetter(Optional<PropertySetter> optionalSetter) {
+	private boolean hasPrivateOrProtectedSetter(Optional<PropertySetter> optionalSetter) {
 		try {
 			Modifier mod = optionalSetter.get().modifier.get();
-			return mod instanceof PrivateModifier;
+			return (mod instanceof PrivateModifier || mod instanceof ProtectedModifier);
 		} catch (NoSuchElementException e) {
 			return false;
 		}
 	}
 
-	private boolean hasPrivateGetter(Optional<PropertyGetter> optionalGetter) {
+	private boolean hasPrivateOrProtectedGetter(Optional<PropertyGetter> optionalGetter) {
 		try {
 			Modifier mod = optionalGetter.get().modifier.get();
-			return mod instanceof PrivateModifier;
+			return (mod instanceof PrivateModifier || mod instanceof ProtectedModifier);
 		} catch (NoSuchElementException e) {
 			return false;
 		}
 	}
-	
+
 	public static void main(String[] args) throws IOException {
 		// Disable jorje logs
 		LogManager.getLogManager().reset();
-		
+
 		// Check parameters
 		if (args.length != 1) {
 			System.out.println();
-			System.out.println("Recursively scans a directory for Apex files then report patterns that are affected by the Summer '21 security update:");
+			System.out.println(
+					"Recursively scans a directory for Apex files then report patterns that are affected by the Summer '21 security update:");
 			System.out.println("Enforce Access Modifiers on Apex Properties in Lightning Component Markup");
-			System.out.println("https://help.salesforce.com/articleView?id=release-notes.rn_lc_enforce_prop_modifiers_cruc.htm&type=5&release=232");
+			System.out.println(
+					"https://help.salesforce.com/articleView?id=release-notes.rn_lc_enforce_prop_modifiers_cruc.htm&type=5&release=232");
 			System.out.println();
 			System.out.println("Usage:\tjava -jar apex-scan-1.0.0.jar path");
 			System.out.println("\tpath\tpath of root directory");
@@ -150,7 +154,7 @@ public class App {
 			System.exit(-1);
 			return;
 		}
-		
+
 		// Check root directory
 		File rootDir;
 		try {
@@ -175,6 +179,6 @@ public class App {
 			System.exit(-3);
 			return;
 		}
-		
+
 	}
 }
