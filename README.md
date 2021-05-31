@@ -11,7 +11,7 @@ This repository holds a script that will help you locate affected Apex methods.
 
 ## Requirements
 
-A Java JDK or JRE version 11 or higher.
+A [Java JDK or JRE version 11](https://adoptopenjdk.net/) or higher.
 
 ## Instructions
 
