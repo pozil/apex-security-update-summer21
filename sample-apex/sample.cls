@@ -3,17 +3,23 @@ public class EnforcePrivateGetter {
     public Integer counter { private get; set; }
 
     @AuraEnabled
-    public static EnforcePrivateGetter GetRepro2()
+    public static EnforcePrivateGetter getRepro1()
     {
         EnforcePrivateGetter result = new EnforcePrivateGetter();
         result.counter = 2; 
         return result;
     }
 
+    @AuraEnabled
+    public static PagedResult getRepro2()
+    {
+        PagedResult result = new PagedResult();
+        result.records = [...];
+        return result;
+    }
+
     private class PagedResult {
         @AuraEnabled
-        public Integer pageSize { get; private set; }
-
-        public String notImportant { get; private set; }
+        public Object[] records { protected get; set; }
     }
 }

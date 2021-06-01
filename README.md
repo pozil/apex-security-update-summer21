@@ -4,7 +4,7 @@ In the Salesforce Summer '21 release, a [security update](https://help.salesforc
 
 This repository holds a script that will help you locate affected Apex methods.
 
-![Schema showing script at work](about.jpeg)
+![Schema showing script at work](about.png)
 
 
 **ℹ️&nbsp;&nbsp;Disclaimer:** this tool is not officially supported by Salesforce and is provided as-is without any warranties.
