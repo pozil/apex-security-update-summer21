@@ -8,7 +8,6 @@ import apex.jorje.data.ast.CompilationUnit;
 import apex.jorje.data.ast.CompilationUnit.ClassDeclUnit;
 import apex.jorje.data.ast.PropertyDecl;
 import apex.jorje.data.ast.PropertyGetter;
-import apex.jorje.data.ast.PropertySetter;
 import apex.jorje.data.ast.Modifier;
 import apex.jorje.data.ast.Modifier.Annotation;
 import apex.jorje.data.ast.Modifier.PrivateModifier;
@@ -98,7 +97,7 @@ public class App {
 
 	private void parsePropertyDeclaration(PropertyDecl property) {
 		if (hasAuraEnabledModifier(property.modifiers)
-				&& (hasPrivateOrProtectedGetter(property.getter) || hasPrivateOrProtectedSetter(property.setter))) {
+				&& hasPrivateOrProtectedGetter(property.getter)) {
 			this.matchCount++;
 			String name = property.name.getValue();
 			this.path.add(name);
@@ -115,15 +114,6 @@ public class App {
 			return false;
 		}).findAny().orElse(null);
 		return foundModifier != null;
-	}
-
-	private boolean hasPrivateOrProtectedSetter(Optional<PropertySetter> optionalSetter) {
-		try {
-			Modifier mod = optionalSetter.get().modifier.get();
-			return (mod instanceof PrivateModifier || mod instanceof ProtectedModifier);
-		} catch (NoSuchElementException e) {
-			return false;
-		}
 	}
 
 	private boolean hasPrivateOrProtectedGetter(Optional<PropertyGetter> optionalGetter) {
